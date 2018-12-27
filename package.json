@@ -1,0 +1,25 @@
+{
+  "name": "leancloud-tester",
+  "version": "0.0.1",
+  "description": "CLI to do black-box testing for LeanCloud",
+  "main": "lib/index.js",
+  "bin": {
+    "test-leancloud": "bin/test-leancloud"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@types/minimist": "^1.2.0",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "nodemon": "^1.18.9",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
+  }
+}
