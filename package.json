@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "CLI to do black-box testing for LeanCloud",
   "main": "lib/index.js",
+  "repository": "github:hjiang/leancloud-tester",
   "bin": {
     "test-leancloud": "bin/test-leancloud"
   },
@@ -11,7 +12,7 @@
     "build:watch": "genversion -s -e src/version.ts && tsc --watch -p .",
     "migrate": "node-pg-migrate"
   },
-  "author": "",
+  "author": "Hong Jiang <hjiang@leancloud.rocks>",
   "license": "MIT",
   "dependencies": {
     "@types/minimist": "^1.2.0",
