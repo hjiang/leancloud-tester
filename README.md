@@ -21,7 +21,7 @@ Compile to JavaScript:
 $ npm run build
 ```
 
-To test your app once:
+To test LeanStorage with your app once:
 
 ```shell
 $ bin/test-leancloud storage --appId=<your appId> --appKey=<your appKey>
@@ -44,6 +44,8 @@ database), add specify the URI with `--pgUri`. For example:
 $ bin/test-leancloud storage --appId=<your appId> --appKey=<your appKey> \
     --continous --pgUri=postgres://localhost/leancloud_tests
 ```
+
+Use `bin/test-leancloud help` to show supported commands.
 
 ### Initializing the database
 
