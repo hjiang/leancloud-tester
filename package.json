@@ -10,7 +10,8 @@
   "scripts": {
     "build": "genversion -s -e src/version.ts && tsc -p .",
     "build:watch": "genversion -s -e src/version.ts && tsc --watch -p .",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "prepare": "npm build"
   },
   "author": "Hong Jiang <hjiang@leancloud.rocks>",
   "license": "MIT",
