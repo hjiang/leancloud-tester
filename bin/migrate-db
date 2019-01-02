@@ -3,5 +3,8 @@
 if [ -z "$PG_URI" ]; then
   echo "PG_URI is not set. Skipping migration.";
 else
+  if [ ! -z "$WAIT_FOR_PORT" ]; then
+    bin/wait-for $WAIT_FOR_PORT
+  fi
   DATABASE_URL=${PG_URI} npm run migrate up
 fi
