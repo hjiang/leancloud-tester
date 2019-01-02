@@ -1,0 +1,7 @@
+#!/bin/sh
+
+if [ -z "$PG_URI" ]; then
+  echo "PG_URI is not set. Skipping migration.";
+else
+  DATABASE_URL=${PG_URI} npm run migrate up
+fi
