@@ -31,7 +31,7 @@ To run the test continuously, add the `--continuous` flag:
 
 ```shell
 $ bin/test-leancloud storage --appId=<your appId> --appKey=<your appKey> \
-    --continous
+    --continuous
 ```
 
 This utility is not intended for load-testing, so it never sends concurrent
@@ -42,7 +42,7 @@ database), add specify the URI with `--pgUri`. For example:
 
 ```shell
 $ bin/test-leancloud storage --appId=<your appId> --appKey=<your appKey> \
-    --continous --pgUri=postgres://localhost/leancloud_tests
+    --continuous --pgUri=postgres://localhost/leancloud_tests
 ```
 
 Use `bin/test-leancloud help` to show supported commands.
