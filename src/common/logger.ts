@@ -46,7 +46,7 @@ export class PostgresLogger implements Logger {
   async fail(msg: string) {
     await this.maybeInitClient();
     await this.client.query('INSERT INTO results(test_name, is_successful, info) VALUES($1, $2, $3)',
-      [this.testName, true, msg]);
+      [this.testName, false, msg]);
     console.error(`FAIL: (${timeString()}) ${msg}`);
   }
 }
