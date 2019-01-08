@@ -9,7 +9,7 @@ function timeString() {
 }
 
 export class ConsoleLogger implements Logger {
-  constructor(public testName:string) {}
+  constructor(public testName: string) { }
 
   pass() {
     console.log(`PASS: (${timeString()}) ${this.testName}`);
@@ -20,6 +20,13 @@ export class ConsoleLogger implements Logger {
   }
 }
 
+interface Result {
+  id?: number;
+  testName: string;
+  successful: boolean;
+  info: null | string;
+  time?: Date;
+}
 export class PostgresLogger implements Logger {
   client: Client;
   initialized: boolean;
@@ -29,33 +36,44 @@ export class PostgresLogger implements Logger {
     this.initialized = false;
   }
 
-  async maybeInitClient() {
+  maybeInitClient = async () => {
     if (!this.initialized) {
       await this.client.connect();
       this.initialized = true;
     }
   }
 
-  async pass() {
+  recordResult = async (result: Result) => {
     await this.maybeInitClient();
-    const result : any  = await this.client.query(`
-      INSERT INTO results(test_name, is_successful) VALUES($1, $2)
+    const dbResult: any = await this.client.query(`
+      INSERT INTO results(test_name, is_successful, info) VALUES($1, $2, $3)
       RETURNING *`,
-      [this.testName, true]);
-    const test = result.rows[0];
+      [result.testName, result.successful, result.info]);
+    const savedResult = dbResult.rows[0];
     await this.client.query(`
       INSERT INTO latest_results(result_id, test_name, is_successful, time)
       VALUES($1, $2, $3, $4)
       ON CONFLICT (test_name)
       DO UPDATE SET (result_id, test_name, is_successful, time) = ($1, $2, $3, $4)`,
-      [test.id, test.test_name, test.is_successful, test.created_at]);
+      [savedResult.id, savedResult.test_name, savedResult.is_successful,
+      savedResult.created_at]);
+  }
+
+  async pass() {
+    this.recordResult({
+      testName: this.testName,
+      successful: true,
+      info: null
+    });
     console.log(`PASS: (${timeString()})`);
   }
 
   async fail(msg: string) {
-    await this.maybeInitClient();
-    await this.client.query('INSERT INTO results(test_name, is_successful, info) VALUES($1, $2, $3)',
-      [this.testName, false, msg]);
+    this.recordResult({
+      testName: this.testName,
+      successful: false,
+      info: null
+    });
     console.error(`FAIL: (${timeString()}) ${msg}`);
   }
 }
