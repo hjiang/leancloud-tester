@@ -45,11 +45,11 @@ async function checkMessage(rtm: any, logger: Logger) {
     bob = await rtm.createIMClient('bob');
     var bobReceivedMessage = false;
     const conv = await alice.createConversation({ members: ['bob'], name: 'test' });
-    bob.on(Event.MESSAGE, function (msg: any, _: any) {
+    bob.on(Event.MESSAGE, async function (msg: any, _: any) {
       if (msg.getText() === 'test msg') {
         bobReceivedMessage = true;
       } else {
-        logger.fail(`Bob received unmatching message!`);
+        await logger.fail(`Bob received unmatching message!`);
       }
     });
     const msg = await conv.send(new TextMessage('test msg'));
@@ -57,11 +57,11 @@ async function checkMessage(rtm: any, logger: Logger) {
       throw new Error('Alice did not receive back expected message.');
     }
     await waitUntil(() => bobReceivedMessage, 20);
-    logger.pass();
+    await logger.pass();
   } catch (e) {
-    logger.fail(`${e}`);
+    await logger.fail(`${e}`);
   } finally {
-    alice && alice.close();
-    bob && bob.close();
+    alice && await alice.close();
+    bob && await bob.close();
   }
 }
