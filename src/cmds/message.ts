@@ -56,7 +56,7 @@ async function checkMessage(rtm: any, logger: Logger) {
     if (msg.getText() !== 'test msg') {
       throw new Error('Alice did not receive back expected message.');
     }
-    await waitUntil(() => bobReceivedMessage);
+    await waitUntil(() => bobReceivedMessage, 20);
     logger.pass();
   } catch (e) {
     logger.fail(`${e}`);
