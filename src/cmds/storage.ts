@@ -14,6 +14,7 @@ export = async (args: StorageArgs) => {
   do {
     await checkStorage(logger);
   } while (args.continuous);
+  process.exit();
 };
 
 async function checkStorage(logger: Logger) {
