@@ -38,8 +38,17 @@ export class PostgresLogger implements Logger {
 
   async pass() {
     await this.maybeInitClient();
-    await this.client.query('INSERT INTO results(test_name, is_successful) VALUES($1, $2)',
+    const result : any  = await this.client.query(`
+      INSERT INTO results(test_name, is_successful) VALUES($1, $2)
+      RETURNING *`,
       [this.testName, true]);
+    const test = result.rows[0];
+    await this.client.query(`
+      INSERT INTO latest_results(result_id, test_name, is_successful, time)
+      VALUES($1, $2, $3, $4)
+      ON CONFLICT (test_name)
+      DO UPDATE SET (result_id, test_name, is_successful, time) = ($1, $2, $3, $4)`,
+      [test.id, test.test_name, test.is_successful, test.created_at]);
     console.log(`PASS: (${timeString()})`);
   }
 
