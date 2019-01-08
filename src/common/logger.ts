@@ -43,6 +43,43 @@ export class PostgresLogger implements Logger {
     }
   }
 
+  getLatestResult: () => Promise<Result | null> = async () => {
+    const dbResult = await this.client.query(`
+      SELECT * FROM latest_results WHERE test_name = $1`, [this.testName]);
+    if (dbResult.rows.length > 0) {
+      const row = dbResult.rows[0];
+      return {
+        id: row.result_id,
+        testName: row.test_name,
+        successful: row.is_successful,
+        info: row.info,
+        time: row.time
+      }
+    } else {
+      return null;
+    }
+  }
+  // id: 'id',
+  // test_name: { type: 'varchar(128)', notNull: true},
+  // start_result_id: { type: 'integer references results(id)', notNull: true },
+  // start_time: { type: 'timestamp', notNull: true },
+  // end_result_id: { type: 'integer references results(id)' },
+  // end_time: { type: 'timestamp' }
+  startDowntime = async (result: Result) => {
+    await this.client.query(`
+      INSERT INTO downtimes(test_name, start_result_id, start_time)
+      VALUES($1, $2, $3)`,
+      [result.testName, result.id, result.time]);
+  }
+
+  endDowntime = async (result: Result) => {
+    await this.client.query(`
+      UPDATE downtimes
+      SET end_result_id = $1, end_time = $2
+      WHERE test_name = $3 AND end_result_id is NULL AND end_time IS NULL`,
+      [result.id, result.time, result.testName]);
+  }
+
   recordResult = async (result: Result) => {
     await this.maybeInitClient();
     const dbResult: any = await this.client.query(`
@@ -50,6 +87,14 @@ export class PostgresLogger implements Logger {
       RETURNING *`,
       [result.testName, result.successful, result.info]);
     const savedResult = dbResult.rows[0];
+    const latestResult = await this.getLatestResult();
+    if (latestResult) {
+      if (latestResult.successful && !savedResult.successful) {
+        this.startDowntime(latestResult);
+      } else if (!latestResult.successful && savedResult.successful) {
+        this.endDowntime(latestResult);
+      }
+    }
     await this.client.query(`
       INSERT INTO latest_results(result_id, test_name, is_successful, time)
       VALUES($1, $2, $3, $4)
@@ -60,7 +105,7 @@ export class PostgresLogger implements Logger {
   }
 
   async pass() {
-    this.recordResult({
+    await this.recordResult({
       testName: this.testName,
       successful: true,
       info: null
@@ -69,7 +114,7 @@ export class PostgresLogger implements Logger {
   }
 
   async fail(msg: string) {
-    this.recordResult({
+    await this.recordResult({
       testName: this.testName,
       successful: false,
       info: null
