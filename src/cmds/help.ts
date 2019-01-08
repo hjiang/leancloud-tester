@@ -13,6 +13,14 @@ const menus: { [propName: string]: string } = {
     --appKey ........... LeanCloud appKey
     --pgUri ............ PostgreSQL URI for recording results (optional)
     --continuous ....... Continuously repeat the test`,
+
+  message: `
+    test-leancloud message <options>
+
+    --appId ............ LeanCloud appId of the app used for testing
+    --appKey ........... LeanCloud appKey
+    --pgUri ............ PostgreSQL URI for recording results (optional)
+    --continuous ....... Continuously repeat the test`,
 }
 
 export = (args: { _: string[] }) => {

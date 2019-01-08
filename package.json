@@ -15,6 +15,7 @@
   "author": "Hong Jiang <hjiang@leancloud.rocks>",
   "license": "MIT",
   "dependencies": {
+    "leancloud-realtime": "^4.2.1",
     "leancloud-storage": "^3.11.1",
     "minimist": "^1.2.0",
     "node-pg-migrate": "^3.14.2",

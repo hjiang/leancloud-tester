@@ -17,6 +17,10 @@ export = () => {
       require('./cmds/storage')(args);
       break;
 
+    case 'message':
+      require('./cmds/message')(args);
+      break;
+
     case 'version':
       require('./cmds/version')(args);
       break;
