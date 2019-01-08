@@ -60,19 +60,19 @@ export class PostgresLogger implements Logger {
     }
   }
 
-  startDowntime = async (result: Result) => {
+  startDowntime = async (testName: string, resultId: number, time: Date) => {
     await this.client.query(`
       INSERT INTO downtimes(test_name, start_result_id, start_time)
       VALUES($1, $2, $3)`,
-      [result.testName, result.id, result.time]);
+      [testName, resultId, time]);
   }
 
-  endDowntime = async (result: Result) => {
+  endDowntime = async (testName: string, resultId: number, time: Date) => {
     await this.client.query(`
       UPDATE downtimes
       SET end_result_id = $1, end_time = $2
       WHERE test_name = $3 AND end_result_id is NULL AND end_time IS NULL`,
-      [result.id, result.time, result.testName]);
+      [resultId, time, testName]);
   }
 
   recordResult = async (result: Result) => {
@@ -85,9 +85,11 @@ export class PostgresLogger implements Logger {
     const latestResult = await this.getLatestResult();
     if (latestResult) {
       if (latestResult.successful && !savedResult.is_successful) {
-        this.startDowntime(latestResult);
+        this.startDowntime(savedResult.test_name, 
+          savedResult.id, savedResult.created_at);
       } else if (!latestResult.successful && savedResult.is_successful) {
-        this.endDowntime(latestResult);
+        this.endDowntime(savedResult.test_name, 
+          savedResult.id, savedResult.created_at);
       }
     }
     await this.client.query(`
@@ -112,7 +114,7 @@ export class PostgresLogger implements Logger {
     await this.recordResult({
       testName: this.testName,
       successful: false,
-      info: null
+      info: msg
     });
     console.error(`FAIL: (${timeString()}) ${msg}`);
   }
