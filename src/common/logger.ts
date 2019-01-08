@@ -59,12 +59,7 @@ export class PostgresLogger implements Logger {
       return null;
     }
   }
-  // id: 'id',
-  // test_name: { type: 'varchar(128)', notNull: true},
-  // start_result_id: { type: 'integer references results(id)', notNull: true },
-  // start_time: { type: 'timestamp', notNull: true },
-  // end_result_id: { type: 'integer references results(id)' },
-  // end_time: { type: 'timestamp' }
+
   startDowntime = async (result: Result) => {
     await this.client.query(`
       INSERT INTO downtimes(test_name, start_result_id, start_time)
@@ -89,9 +84,9 @@ export class PostgresLogger implements Logger {
     const savedResult = dbResult.rows[0];
     const latestResult = await this.getLatestResult();
     if (latestResult) {
-      if (latestResult.successful && !savedResult.successful) {
+      if (latestResult.successful && !savedResult.is_successful) {
         this.startDowntime(latestResult);
-      } else if (!latestResult.successful && savedResult.successful) {
+      } else if (!latestResult.successful && savedResult.is_successful) {
         this.endDowntime(latestResult);
       }
     }
