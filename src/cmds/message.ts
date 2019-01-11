@@ -57,11 +57,10 @@ async function checkMessage(rtm: any, logger: Logger) {
       throw new Error('Alice did not receive back expected message.');
     }
     await waitUntil(() => bobReceivedMessage, 20);
+    await alice.close();
+    await bob.close();
     await logger.pass();
   } catch (e) {
     await logger.fail(`${e}`);
-  } finally {
-    alice && await alice.close();
-    bob && await bob.close();
   }
 }
