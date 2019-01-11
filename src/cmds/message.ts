@@ -38,11 +38,18 @@ function waitUntil(cond: () => boolean, seconds?: number) {
 }
 
 async function checkMessage(rtm: any, logger: Logger) {
-  var alice = null;
-  var bob = null
+  const makeId = () => {
+    var id = "";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  
+    for (var i = 0; i < 10; i++)
+      id += chars.charAt(Math.floor(Math.random() * chars.length));
+  
+    return id;
+  };
   try {
-    alice = await rtm.createIMClient('alice');
-    bob = await rtm.createIMClient('bob');
+    const alice = await rtm.createIMClient(makeId());
+    const bob = await rtm.createIMClient(makeId());
     var bobReceivedMessage = false;
     const conv = await alice.createConversation({ members: ['bob'], name: 'test' });
     bob.on(Event.MESSAGE, async function (msg: any, _: any) {
