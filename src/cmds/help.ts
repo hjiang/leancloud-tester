@@ -3,6 +3,7 @@ const menus: { [propName: string]: string } = {
     test-leancloud [command] <options>
 
     storage ............ test LeanStorage
+    message ............ test LeanMessage
     version ............ show package version
     help ............... show help menu for a command`,
 
